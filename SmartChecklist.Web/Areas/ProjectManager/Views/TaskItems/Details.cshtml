@@ -1,0 +1,206 @@
+﻿@model SmartChecklist.Web.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Chi tiết công việc";
+
+    var isOverdue = Model.Deadline.HasValue
+        && Model.Deadline.Value < DateTime.Now
+        && Model.Status != "Hoàn thành";
+
+    var statusClass = "pm-badge-info";
+    if (Model.Status == "Hoàn thành")
+    {
+        statusClass = "pm-badge-success";
+    }
+    else if (Model.Status == "Đang thực hiện")
+    {
+        statusClass = "pm-badge-warning";
+    }
+    else if (isOverdue)
+    {
+        statusClass = "pm-badge-danger";
+    }
+
+    var priorityClass = "pm-badge-info";
+    if (!string.IsNullOrWhiteSpace(Model.Priority))
+    {
+        var priority = Model.Priority.Trim().ToLower();
+        if (priority.Contains("khẩn") || priority.Contains("cao"))
+        {
+            priorityClass = "pm-badge-danger";
+        }
+        else if (priority.Contains("trung"))
+        {
+            priorityClass = "pm-badge-warning";
+        }
+        else if (priority.Contains("thấp"))
+        {
+            priorityClass = "pm-badge-success";
+        }
+    }
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="pm-card h-100">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                <div>
+                    <h2 class="pm-section-title mb-2">@Model.Title</h2>
+                    <p class="pm-muted mb-0">
+                        Xem thông tin chi tiết công việc và lịch sử cập nhật trạng thái.
+                    </p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-action="Edit"
+                           asp-route-id="@Model.TaskItemId"
+                           class="btn btn-primary">
+                        Chỉnh sửa công việc
+                    </a>
+
+                    <a asp-action="Index"
+                           asp-route-checklistId="@Model.ChecklistId"
+                           class="btn btn-outline-secondary">
+                        Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Tiêu đề</div>
+                        <div class="fw-bold">@Model.Title</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-2">Trạng thái</div>
+                        <span class="pm-badge @statusClass">
+                            @(isOverdue ? "Quá hạn" : Model.Status)
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-2">Ưu tiên</div>
+                        <span class="pm-badge @priorityClass">@Model.Priority</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Deadline</div>
+                        <div class="fw-bold">
+                            @(Model.Deadline.HasValue? Model.Deadline.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa đặt")
+                        </div>
+                        @if (isOverdue)
+                        {
+                            <div class="text-danger small mt-1">Công việc đã quá hạn</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Người phụ trách</div>
+                        <div class="fw-bold">
+                            @(string.IsNullOrWhiteSpace(Model.AssignedToUser?.Email) ? "Chưa phân công" : Model.AssignedToUser!.Email)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Người tạo</div>
+                        <div class="fw-bold">
+                            @(string.IsNullOrWhiteSpace(Model.CreatedByUser?.Email) ? "Không xác định" : Model.CreatedByUser!.Email)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="border rounded-4 p-3">
+                        <div class="pm-muted small mb-2">Mô tả công việc</div>
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <div>@Model.Description</div>
+                        }
+                        else
+                        {
+                            <div class="pm-muted">Công việc này chưa có mô tả.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pm-card mb-4">
+            <h3 class="pm-section-title">Hành động nhanh</h3>
+            <div class="d-grid gap-3">
+                <a asp-action="Edit"
+                       asp-route-id="@Model.TaskItemId"
+                       class="btn btn-outline-primary">
+                    Cập nhật công việc
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Reminders"
+                       asp-action="Index"
+                       asp-route-taskItemId="@Model.TaskItemId"
+                       class="btn btn-outline-secondary">
+                    Quản lý reminder
+                </a>
+
+                <a asp-action="Delete"
+                       asp-route-id="@Model.TaskItemId"
+                       class="btn btn-outline-danger">
+                    Xóa công việc
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="pm-card">
+            <h3 class="pm-section-title">Lịch sử cập nhật trạng thái</h3>
+
+            @if (Model.TaskProgressLogs != null && Model.TaskProgressLogs.Any())
+            {
+                <div class="pm-table-wrap">
+                    <table class="table pm-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Từ trạng thái</th>
+                                <th>Sang trạng thái</th>
+                                <th>Người thay đổi</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var log in Model.TaskProgressLogs.OrderByDescending(x => x.ChangedAt))
+                            {
+                                <tr>
+                                    <td>@log.ChangedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@log.OldStatus</td>
+                                    <td>@log.NewStatus</td>
+                                    <td>@log.ChangedByUser?.Email</td>
+                                    <td>@log.Note</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="pm-muted">Chưa có lịch sử cập nhật.</div>
+            }
+        </div>
+    </div>
+</div>

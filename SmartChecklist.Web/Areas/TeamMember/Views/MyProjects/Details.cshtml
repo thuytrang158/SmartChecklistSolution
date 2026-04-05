@@ -1,0 +1,28 @@
+﻿@model SmartChecklist.Web.Models.Project
+
+@{
+    ViewData["Title"] = "Thông tin dự án";
+}
+
+<div class="container mt-4">
+    <h1>Thông tin dự án</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">Tên dự án</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+
+        <dt class="col-sm-3">Mô tả</dt>
+        <dd class="col-sm-9">@Model.Description</dd>
+
+        <dt class="col-sm-3">Ngày bắt đầu</dt>
+        <dd class="col-sm-9">@Model.StartDate?.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Ngày kết thúc</dt>
+        <dd class="col-sm-9">@Model.EndDate?.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9">@Model.Status</dd>
+    </dl>
+
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</div>

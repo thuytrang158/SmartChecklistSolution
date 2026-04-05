@@ -1,0 +1,88 @@
+﻿@model IEnumerable<SmartChecklist.Web.Models.Notification>
+
+@{
+    ViewData["Title"] = "Thông báo";
+}
+
+<div class="mb-4">
+    <h2 class="mb-2">Thông báo của tôi</h2>
+    <p class="text-muted mb-0">
+        Theo dõi nhắc nhở công việc, deadline và các gợi ý thông minh từ hệ thống.
+    </p>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-light border">
+        Hiện tại bạn chưa có thông báo nào.
+    </div>
+}
+else
+{
+    <div class="d-flex flex-column gap-3">
+        @foreach (var item in Model)
+        {
+            var borderClass = item.IsRead ? "border-light" : "border-primary";
+            var badgeClass = item.Type == "AI"
+                ? "bg-info text-dark"
+                : item.Type == "Reminder"
+                    ? "bg-warning text-dark"
+                    : "bg-secondary";
+
+            <div class="card shadow-sm @borderClass">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <h5 class="mb-0">@item.Title</h5>
+                                <span class="badge @badgeClass">@item.Type</span>
+                                @if (!item.IsRead)
+                                {
+                                    <span class="badge bg-primary">Mới</span>
+                                }
+                            </div>
+
+                            <div class="text-muted mb-2">
+                                @item.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+
+                            <div>
+                                @item.Message
+                            </div>
+
+                            @if (item.Type == "AI")
+                            {
+                                <div class="small text-info mt-2">
+                                    Gợi ý này được tạo từ phân tích tiến độ và deadline hiện tại của bạn.
+                                </div>
+                            }
+                            else if (item.Type == "Reminder")
+                            {
+                                <div class="small text-warning mt-2">
+                                    Đây là nhắc nhở tự động dựa trên thời gian reminder đã thiết lập.
+                                </div>
+                            }
+                        </div>
+
+                        <div>
+                            @if (!item.IsRead)
+                            {
+                                <form asp-action="MarkAsRead" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.NotificationId" />
+                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                        Đánh dấu đã đọc
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-success small fw-semibold">Đã đọc</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

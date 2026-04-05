@@ -1,0 +1,159 @@
+﻿@model SmartChecklist.Web.ViewModels.DashboardReportViewModel
+
+@{
+    ViewData["Title"] = "Báo cáo tổng quan";
+}
+
+<div class="container mt-4">
+    <h1>Báo cáo tổng quan</h1>
+
+    <div class="card shadow-sm border-0 mt-4 mb-4">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">AI Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-primary border-0 mb-0">
+                @Model.AiSummary
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card p-3 bg-light">
+                <h5>Dự án</h5>
+                <h3>@Model.TotalProjects</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 bg-light">
+                <h5>Checklist</h5>
+                <h3>@Model.TotalChecklists</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 bg-light">
+                <h5>Công việc</h5>
+                <h3>@Model.TotalTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 bg-success text-white">
+                <h5>Hoàn thành</h5>
+                <h3>@Model.CompletedTasks</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card p-3 bg-warning">
+                <h5>Quá hạn</h5>
+                <h3>@Model.OverdueTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card p-3">
+                <h5>Tỷ lệ hoàn thành</h5>
+                <h2>@Model.CompletionRate.ToString("0.##") %</h2>
+
+                <div class="progress mt-2">
+                    <div class="progress-bar bg-success"
+                         role="progressbar"
+                         style="width: @Model.CompletionRate%">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4 g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Insight nổi bật</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.AiInsights.Any())
+                    {
+                        foreach (var insight in Model.AiInsights)
+                        {
+                            var alertClass = insight.Severity switch
+                            {
+                                "Danger" => "alert-danger",
+                                "Warning" => "alert-warning",
+                                "Success" => "alert-success",
+                                _ => "alert-info"
+                            };
+
+                            <div class="alert @alertClass mb-3">
+                                <div class="fw-semibold mb-1">@insight.Title</div>
+                                <div>@insight.Message</div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-muted">Chưa có insight nổi bật.</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Hiệu suất thành viên</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.MemberPerformances.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Thành viên</th>
+                                        <th>Tổng việc</th>
+                                        <th>Hoàn thành</th>
+                                        <th>Quá hạn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var member in Model.MemberPerformances)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">@(member.FullName ?? member.Email)</div>
+                                                <div class="small text-muted">@member.Email</div>
+                                            </td>
+                                            <td>@member.TotalTasks</td>
+                                            <td>@member.CompletedTasks (@member.CompletionRate.ToString("0.#")%)</td>
+                                            <td>
+                                                @if (member.OverdueTasks > 0)
+                                                {
+                                                    <span class="badge bg-danger">@member.OverdueTasks</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">0</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-muted">Chưa có dữ liệu thành viên.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

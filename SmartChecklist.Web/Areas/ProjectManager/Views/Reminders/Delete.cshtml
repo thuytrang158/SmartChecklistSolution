@@ -1,0 +1,25 @@
+﻿@model SmartChecklist.Web.Models.Reminder
+
+@{
+    ViewData["Title"] = "Xóa reminder";
+}
+
+<div class="container mt-4">
+    <h1>Xóa reminder</h1>
+
+    <p>Bạn có chắc muốn xóa reminder này không?</p>
+
+    <dl class="row">
+        <dt class="col-sm-3">Thời gian nhắc</dt>
+        <dd class="col-sm-9">@Model.ReminderTime.ToString("dd/MM/yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Loại nhắc</dt>
+        <dd class="col-sm-9">@Model.ReminderType</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ReminderId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" asp-route-taskItemId="@Model.TaskItemId" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

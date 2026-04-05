@@ -1,0 +1,178 @@
+﻿@model IEnumerable<SmartChecklist.Web.ViewModels.ChecklistProgressViewModel>
+
+@{
+    var isOverview = ViewBag.IsOverview != null && (bool)ViewBag.IsOverview;
+    ViewData["Title"] = isOverview ? "Checklist" : "Checklist theo dự án";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">
+                @(isOverview ? "Tất cả checklist" : "Danh sách checklist")
+            </h2>
+
+            @if (!isOverview)
+            {
+                <p class="pm-muted mb-0">
+                    Dự án: <span class="fw-semibold">@ViewBag.ProjectName</span>
+                </p>
+            }
+            else
+            {
+                <p class="pm-muted mb-0">
+                    Tổng hợp checklist từ tất cả dự án bạn đang quản lý.
+                </p>
+            }
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-projectId="@ViewBag.ProjectId"
+                       class="btn btn-primary">
+                    + Tạo checklist mới
+                </a>
+            }
+
+            <a asp-area="ProjectManager"
+                   asp-controller="Projects"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary">
+                Quay lại dự án
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="pm-table-wrap">
+            <table class="table pm-table">
+                <thead>
+                    <tr>
+                        <th>Tên checklist</th>
+                        <th>Mô tả</th>
+                        <th>Loại công việc</th>
+                        <th>Ngày tạo</th>
+                        <th>Tiến độ</th>
+                        <th>Số task</th>
+                        <th style="width: 280px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        string progressClass = "pm-badge-info";
+                        if (item.ProgressPercent >= 100)
+                        {
+                            progressClass = "pm-badge-success";
+                        }
+                        else if (item.ProgressPercent >= 50)
+                        {
+                            progressClass = "pm-badge-warning";
+                        }
+
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@item.Title</div>
+                                <div class="pm-muted small">Checklist #@item.ChecklistId</div>
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    @item.Description
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa có mô tả</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.WorkType))
+                                {
+                                    <span class="pm-badge pm-badge-info">@item.WorkType</span>
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa phân loại</span>
+                                }
+                            </td>
+
+                            <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+
+                            <td>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <div class="pm-progress flex-grow-1">
+                                        <div class="pm-progress-bar" style="width: @item.ProgressPercent%"></div>
+                                    </div>
+                                    <span class="pm-badge @progressClass">
+                                        @item.ProgressPercent.ToString("0.##")%
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="fw-semibold">@item.CompletedTasks</span> / @item.TotalTasks
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a asp-action="Details"
+                                           asp-route-id="@item.ChecklistId"
+                                           class="btn btn-outline-primary btn-sm">
+                                        Chi tiết
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                           asp-route-id="@item.ChecklistId"
+                                           class="btn btn-outline-warning btn-sm">
+                                        Sửa
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                           asp-route-id="@item.ChecklistId"
+                                           class="btn btn-outline-danger btn-sm">
+                                        Xóa
+                                    </a>
+
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="TaskItems"
+                                           asp-action="Index"
+                                           asp-route-checklistId="@item.ChecklistId"
+                                           class="btn btn-outline-success btn-sm">
+                                        Công việc
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            @if (isOverview)
+            {
+                <div class="pm-muted mb-3">Bạn chưa có checklist nào trong các dự án đang quản lý.</div>
+            }
+            else
+            {
+                <div class="pm-muted mb-3">Dự án này chưa có checklist nào.</div>
+            }
+
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-projectId="@ViewBag.ProjectId"
+                       class="btn btn-primary">
+                    Tạo checklist đầu tiên
+                </a>
+            }
+        </div>
+    }
+</div>

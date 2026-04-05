@@ -1,0 +1,89 @@
+﻿@model SmartChecklist.Web.Models.Checklist
+
+@{
+    ViewData["Title"] = "Xóa checklist";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2 text-danger">Xác nhận xóa checklist</h2>
+            <p class="pm-muted mb-0">
+                Checklist sẽ bị ẩn khỏi dự án sau khi xác nhận xóa.
+            </p>
+        </div>
+
+        <a asp-action="Index"
+               asp-route-projectId="@Model.ProjectId"
+               class="btn btn-outline-secondary">
+            Quay lại danh sách checklist
+        </a>
+    </div>
+
+    <div class="alert alert-danger">
+        Bạn có chắc muốn xóa checklist này không? Các công việc liên quan có thể bị ảnh hưởng khi quản lý theo dự án.
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="pm-card h-100">
+                <h3 class="pm-section-title">Thông tin checklist</h3>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <div class="pm-muted small mb-1">Tên checklist</div>
+                            <div class="fw-bold">@Model.Title</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <div class="pm-muted small mb-1">Loại công việc</div>
+                            <div class="fw-bold">
+                                @(string.IsNullOrWhiteSpace(Model.WorkType) ? "Chưa phân loại" : Model.WorkType)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="border rounded-4 p-3">
+                            <div class="pm-muted small mb-2">Mô tả</div>
+                            @if (!string.IsNullOrWhiteSpace(Model.Description))
+                            {
+                                <div>@Model.Description</div>
+                            }
+                            else
+                            {
+                                <div class="pm-muted">Checklist này chưa có mô tả.</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="pm-card">
+                <h3 class="pm-section-title">Thao tác</h3>
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ChecklistId" />
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-danger">
+                            Xác nhận xóa checklist
+                        </button>
+
+                        <a asp-action="Index"
+                               asp-route-projectId="@Model.ProjectId"
+                               class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

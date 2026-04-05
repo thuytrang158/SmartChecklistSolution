@@ -1,0 +1,94 @@
+﻿@model IEnumerable<SmartChecklist.Web.Models.Project>
+
+@{
+    ViewData["Title"] = "Dự án của tôi";
+}
+
+<div class="alert alert-warning">
+    Debug UserId: @ViewBag.DebugUserId
+</div>
+
+<div class="mb-4">
+    <h2 class="mb-2">Dự án của tôi</h2>
+    <p class="text-muted mb-0">
+        Xem các dự án bạn đang tham gia và theo dõi tình trạng chung của từng dự án.
+    </p>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Danh sách dự án tham gia</h5>
+        <span class="text-muted small">Tổng: @Model.Count() dự án</span>
+    </div>
+
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <div class="alert alert-light border mb-0">
+                Bạn chưa tham gia dự án nào.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Tên dự án</th>
+                            <th>Mô tả</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@item.Name</td>
+                                <td>
+                                    @if (string.IsNullOrWhiteSpace(item.Description))
+                                    {
+                                        <span class="text-muted">Không có mô tả</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Description
+                                    }
+                                </td>
+                                <td>
+                                    @(item.StartDate?.ToString("dd/MM/yyyy") ?? "-")
+                                </td>
+                                <td>
+                                    @(item.EndDate?.ToString("dd/MM/yyyy") ?? "-")
+                                </td>
+                                <td>
+                                    @if (item.Status == "Đang thực hiện")
+                                    {
+                                        <span class="badge bg-primary">Đang thực hiện</span>
+                                    }
+                                    else if (item.Status == "Hoàn thành")
+                                    {
+                                        <span class="badge bg-success">Hoàn thành</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Details"
+                                           asp-route-id="@item.ProjectId"
+                                           class="btn btn-outline-secondary btn-sm">
+                                        Chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

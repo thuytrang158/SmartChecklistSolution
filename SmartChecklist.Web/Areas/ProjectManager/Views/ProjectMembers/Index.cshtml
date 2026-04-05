@@ -1,0 +1,154 @@
+﻿@model IEnumerable<SmartChecklist.Web.Models.ProjectMember>
+
+@{
+    var isOverview = ViewBag.IsOverview != null && (bool)ViewBag.IsOverview;
+    ViewData["Title"] = isOverview ? "Thành viên" : "Thành viên dự án";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">
+                @(isOverview ? "Tất cả thành viên dự án" : "Thành viên dự án")
+            </h2>
+
+            @if (!isOverview)
+            {
+                <p class="pm-muted mb-0">
+                    Dự án: <span class="fw-semibold">@ViewBag.ProjectName</span>
+                </p>
+            }
+            else
+            {
+                <p class="pm-muted mb-0">
+                    Tổng hợp thành viên của tất cả dự án bạn đang quản lý.
+                </p>
+            }
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-projectId="@ViewBag.ProjectId"
+                       class="btn btn-primary">
+                    + Thêm thành viên
+                </a>
+            }
+
+            <a asp-area="ProjectManager"
+                   asp-controller="Projects"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary">
+                Quay lại dự án
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="pm-table-wrap">
+            <table class="table pm-table">
+                <thead>
+                    <tr>
+                        <th>Thành viên</th>
+                        <th>Vai trò trong dự án</th>
+                        <th>Ngày tham gia</th>
+                        @if (isOverview)
+                        {
+                            <th>Dự án</th>
+                        }
+                        <th style="width: 120px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        string roleClass = "pm-badge-info";
+                        if (!string.IsNullOrWhiteSpace(item.MemberRole))
+                        {
+                            var role = item.MemberRole.Trim().ToLower();
+                            if (role.Contains("lead") || role.Contains("trưởng"))
+                            {
+                                roleClass = "pm-badge-warning";
+                            }
+                            else if (role.Contains("dev") || role.Contains("member") || role.Contains("thành viên"))
+                            {
+                                roleClass = "pm-badge-success";
+                            }
+                        }
+
+                        <tr>
+                            <td>
+                                <div class="fw-bold">
+                                    @(string.IsNullOrWhiteSpace(item.User?.FullName) ? "Chưa có họ tên" : item.User!.FullName)
+                                </div>
+                                <div class="pm-muted small">
+                                    @(string.IsNullOrWhiteSpace(item.User?.Email) ? "Chưa có email" : item.User!.Email)
+                                </div>
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.MemberRole))
+                                {
+                                    <span class="pm-badge @roleClass">@item.MemberRole</span>
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa phân vai trò</span>
+                                }
+                            </td>
+
+                            <td>@item.JoinedAt.ToString("dd/MM/yyyy HH:mm")</td>
+
+                            @if (isOverview)
+                            {
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.Project?.Name))
+                                    {
+                                        <div class="fw-semibold">@item.Project?.Name</div>
+                                        <div class="pm-muted small">Dự án #@item.ProjectId</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="pm-muted">Không xác định</span>
+                                    }
+                                </td>
+                            }
+
+                            <td>
+                                <a asp-action="Delete"
+                                       asp-route-id="@item.ProjectMemberId"
+                                       class="btn btn-outline-danger btn-sm">
+                                    Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            @if (isOverview)
+            {
+                <div class="pm-muted mb-3">Chưa có thành viên nào trong các dự án bạn đang quản lý.</div>
+            }
+            else
+            {
+                <div class="pm-muted mb-3">Dự án này chưa có thành viên nào.</div>
+            }
+
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-projectId="@ViewBag.ProjectId"
+                       class="btn btn-primary">
+                    Thêm thành viên đầu tiên
+                </a>
+            }
+        </div>
+    }
+</div>

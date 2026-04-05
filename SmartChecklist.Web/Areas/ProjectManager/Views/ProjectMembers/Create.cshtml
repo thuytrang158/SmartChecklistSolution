@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Thêm thành viên";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">Thêm thành viên vào dự án</h2>
+            <p class="pm-muted mb-0">
+                Dự án: <span class="fw-semibold">@ViewBag.ProjectName</span>
+            </p>
+        </div>
+
+        <a asp-action="Index"
+               asp-route-projectId="@ViewBag.ProjectId"
+               class="btn btn-outline-secondary">
+            Quay lại danh sách thành viên
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post" novalidate>
+        <input type="hidden" name="projectId" value="@ViewBag.ProjectId" />
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+        }
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="pm-card h-100">
+                    <h3 class="pm-section-title">Thông tin thành viên</h3>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn người dùng</label>
+                        <select name="userId" class="form-select" asp-items="ViewBag.UserId">
+                            <option value="">-- Chọn người dùng --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Vai trò trong dự án</label>
+                        <select name="memberRole" class="form-select">
+                            <option value="TeamMember">Team Member</option>
+                            <option value="Developer">Developer</option>
+                            <option value="Tester">Tester</option>
+                            <option value="Designer">Designer</option>
+                            <option value="Business Analyst">Business Analyst</option>
+                            <option value="Leader">Leader</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pm-card mb-4">
+                    <h3 class="pm-section-title">Lưu ý</h3>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb-2">Chỉ chọn những người chưa thuộc dự án này.</li>
+                        <li class="mb-2">Vai trò nên phản ánh đúng trách nhiệm thực tế.</li>
+                        <li>Thành viên được thêm sẽ bắt đầu ở trạng thái hoạt động.</li>
+                    </ul>
+                </div>
+
+                <div class="pm-card">
+                    <h3 class="pm-section-title">Thao tác</h3>
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success">
+                            Thêm thành viên
+                        </button>
+
+                        <a asp-action="Index"
+                               asp-route-projectId="@ViewBag.ProjectId"
+                               class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

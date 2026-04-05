@@ -1,0 +1,68 @@
+﻿@model SmartChecklist.Web.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Chi tiết công việc";
+}
+
+<div class="container mt-4">
+    <h1>Chi tiết công việc</h1>
+
+    <dl class="row">
+        <dt class="col-sm-3">Tiêu đề</dt>
+        <dd class="col-sm-9">@Model.Title</dd>
+
+        <dt class="col-sm-3">Mô tả</dt>
+        <dd class="col-sm-9">@Model.Description</dd>
+
+        <dt class="col-sm-3">Dự án</dt>
+        <dd class="col-sm-9">@Model.Checklist?.Project?.Name</dd>
+
+        <dt class="col-sm-3">Checklist</dt>
+        <dd class="col-sm-9">@Model.Checklist?.Title</dd>
+
+        <dt class="col-sm-3">Deadline</dt>
+        <dd class="col-sm-9">@Model.Deadline?.ToString("dd/MM/yyyy HH:mm")</dd>
+
+        <dt class="col-sm-3">Ưu tiên</dt>
+        <dd class="col-sm-9">@Model.Priority</dd>
+
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9">@Model.Status</dd>
+    </dl>
+
+    <h3 class="mt-4">Lịch sử cập nhật</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Thời gian</th>
+                <th>Từ</th>
+                <th>Sang</th>
+                <th>Người cập nhật</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.TaskProgressLogs != null && Model.TaskProgressLogs.Any())
+            {
+                foreach (var log in Model.TaskProgressLogs.OrderByDescending(x => x.ChangedAt))
+                {
+                    <tr>
+                        <td>@log.ChangedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@log.OldStatus</td>
+                        <td>@log.NewStatus</td>
+                        <td>@log.ChangedByUser?.Email</td>
+                        <td>@log.Note</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">Chưa có lịch sử cập nhật.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</div>

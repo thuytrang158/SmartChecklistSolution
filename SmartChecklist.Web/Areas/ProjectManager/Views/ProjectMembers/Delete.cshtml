@@ -1,0 +1,28 @@
+﻿@model SmartChecklist.Web.Models.ProjectMember
+
+@{
+    ViewData["Title"] = "Xóa thành viên";
+}
+
+<div class="container mt-4">
+    <h1>Xóa thành viên khỏi dự án</h1>
+
+    <p>Bạn có chắc muốn xóa thành viên này không?</p>
+
+    <dl class="row">
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.User?.Email</dd>
+
+        <dt class="col-sm-3">Họ tên</dt>
+        <dd class="col-sm-9">@Model.User?.FullName</dd>
+
+        <dt class="col-sm-3">Vai trò</dt>
+        <dd class="col-sm-9">@Model.MemberRole</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ProjectMemberId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a asp-action="Index" asp-route-projectId="@Model.ProjectId" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

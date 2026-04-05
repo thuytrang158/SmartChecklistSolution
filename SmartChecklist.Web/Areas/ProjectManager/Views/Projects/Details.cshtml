@@ -1,0 +1,280 @@
+﻿@model SmartChecklist.Web.ViewModels.ProjectDetailsViewModel
+
+@{
+    ViewData["Title"] = "Chi tiết dự án";
+
+    var project = Model.Project;
+
+    var statusClass = "pm-badge-info";
+    if (project.Status == "Hoàn thành")
+    {
+        statusClass = "pm-badge-success";
+    }
+    else if (project.Status == "Tạm dừng")
+    {
+        statusClass = "pm-badge-warning";
+    }
+    else if (project.Status == "Trễ hạn" || project.Status == "Quá hạn")
+    {
+        statusClass = "pm-badge-danger";
+    }
+
+    var priorityClass = "pm-badge-info";
+    var priorityText = $"Mức {project.PriorityScore}";
+
+    if (project.PriorityScore >= 8)
+    {
+        priorityClass = "pm-badge-danger";
+        priorityText = $"Rất cao ({project.PriorityScore})";
+    }
+    else if (project.PriorityScore >= 5)
+    {
+        priorityClass = "pm-badge-warning";
+        priorityText = $"Trung bình ({project.PriorityScore})";
+    }
+    else if (project.PriorityScore > 0)
+    {
+        priorityClass = "pm-badge-success";
+        priorityText = $"Thấp ({project.PriorityScore})";
+    }
+    else
+    {
+        priorityClass = "pm-badge-info";
+        priorityText = "Chưa đặt";
+    }
+}
+
+<div class="row g-4">
+    <div class="col-12">
+        <div class="pm-card">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                <div>
+                    <h2 class="pm-section-title mb-2">@project.Name</h2>
+                    <p class="pm-muted mb-0">
+                        Theo dõi nhanh tiến độ, khối lượng công việc và truy cập các khu vực quản lý của dự án.
+                    </p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-area="ProjectManager"
+                           asp-controller="Projects"
+                           asp-action="Edit"
+                           asp-route-id="@project.ProjectId"
+                           class="btn btn-primary">
+                        Chỉnh sửa dự án
+                    </a>
+
+                    <a asp-area="ProjectManager"
+                           asp-controller="Projects"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+                        Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-2">
+                    <div class="pm-kpi-card">
+                        <div class="pm-kpi-label">Checklist</div>
+                        <div class="pm-kpi-value">@Model.TotalChecklists</div>
+                        <div class="pm-kpi-note">Tổng checklist</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-2">
+                    <div class="pm-kpi-card">
+                        <div class="pm-kpi-label">Công việc</div>
+                        <div class="pm-kpi-value">@Model.TotalTasks</div>
+                        <div class="pm-kpi-note">Tổng task</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-2">
+                    <div class="pm-kpi-card">
+                        <div class="pm-kpi-label">Hoàn thành</div>
+                        <div class="pm-kpi-value">@Model.CompletedTasks</div>
+                        <div class="pm-kpi-note">Task đã xong</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-2">
+                    <div class="pm-kpi-card">
+                        <div class="pm-kpi-label">Quá hạn</div>
+                        <div class="pm-kpi-value">@Model.OverdueTasks</div>
+                        <div class="pm-kpi-note">Cần xử lý</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-2">
+                    <div class="pm-kpi-card">
+                        <div class="pm-kpi-label">Thành viên</div>
+                        <div class="pm-kpi-value">@Model.ActiveMembers</div>
+                        <div class="pm-kpi-note">Đang tham gia</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-2">
+                    <div class="pm-kpi-card">
+                        <div class="pm-kpi-label">Tiến độ</div>
+                        <div class="pm-kpi-value">@Model.ProgressPercent%</div>
+                        <div class="pm-kpi-note">Theo số task hoàn thành</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="pm-card h-100">
+            <h3 class="pm-section-title">Thông tin tổng quan</h3>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Mã dự án</div>
+                        <div class="fw-bold">#@project.ProjectId</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Ngày tạo</div>
+                        <div class="fw-bold">@project.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-2">Trạng thái</div>
+                        <span class="pm-badge @statusClass">@project.Status</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-2">Độ ưu tiên</div>
+                        <span class="pm-badge @priorityClass">@priorityText</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Ngày bắt đầu</div>
+                        <div class="fw-bold">
+                            @(project.StartDate.HasValue? project.StartDate.Value.ToString("dd/MM/yyyy") : "Chưa đặt")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Ngày kết thúc</div>
+                        <div class="fw-bold">
+                            @(project.EndDate.HasValue? project.EndDate.Value.ToString("dd/MM/yyyy") : "Chưa đặt")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="border rounded-4 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="pm-muted small">Tiến độ hoàn thành dự án</div>
+                            <div class="fw-bold">@Model.ProgressPercent%</div>
+                        </div>
+
+                        <div class="pm-progress">
+                            <div class="pm-progress-bar" style="width: @(Model.ProgressPercent == 0 ? 2 : Model.ProgressPercent)%"></div>
+                        </div>
+
+                        <div class="form-text mt-2">
+                            @if (Model.TotalTasks == 0)
+                            {
+                                <span>Chưa có công việc nào để tính tiến độ.</span>
+                            }
+                            else
+                            {
+                                <span>@Model.CompletedTasks / @Model.TotalTasks công việc đã hoàn thành.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                @if (project.StartDate.HasValue && project.EndDate.HasValue && project.EndDate < project.StartDate)
+                {
+                    <div class="col-12">
+                        <div class="alert alert-danger mb-0">
+                            Ngày kết thúc đang nhỏ hơn ngày bắt đầu. Bạn nên kiểm tra lại dữ liệu dự án.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pm-card mb-4">
+            <h3 class="pm-section-title">Hành động nhanh</h3>
+
+            <div class="d-grid gap-3">
+                <a asp-area="ProjectManager"
+                       asp-controller="Checklists"
+                       asp-action="Index"
+                       asp-route-projectId="@project.ProjectId"
+                       class="btn btn-outline-success">
+                    Quản lý checklist
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="ProjectMembers"
+                       asp-action="Index"
+                       asp-route-projectId="@project.ProjectId"
+                       class="btn btn-outline-secondary">
+                    Quản lý thành viên
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Projects"
+                       asp-action="Edit"
+                       asp-route-id="@project.ProjectId"
+                       class="btn btn-outline-primary">
+                    Cập nhật thông tin dự án
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Projects"
+                       asp-action="Delete"
+                       asp-route-id="@project.ProjectId"
+                       class="btn btn-outline-danger">
+                    Xóa dự án
+                </a>
+            </div>
+        </div>
+
+        <div class="pm-card">
+            <h3 class="pm-section-title">Điều hướng</h3>
+            <div class="list-group list-group-flush">
+                <a asp-area="ProjectManager"
+                       asp-controller="Projects"
+                       asp-action="Index"
+                       class="list-group-item list-group-item-action">
+                    Danh sách dự án
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="list-group-item list-group-item-action">
+                    Về tổng quan
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Report"
+                       class="list-group-item list-group-item-action">
+                    Xem báo cáo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

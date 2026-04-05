@@ -1,0 +1,339 @@
+﻿@model SmartChecklist.Web.ViewModels.TeamMemberDashboardViewModel
+
+@{
+    ViewData["Title"] = "Tổng quan";
+    var assistantMoodClass = Model.AssistantMood == "Cần ưu tiên"
+        ? "bg-danger"
+        : Model.AssistantMood == "Nhắc nhẹ"
+            ? "bg-warning text-dark"
+            : "bg-success";
+}
+
+<div class="mb-4">
+    <h2 class="mb-2">Dashboard Team Member</h2>
+    <p class="text-muted mb-0">
+        Theo dõi nhanh dự án tham gia, công việc được giao và các hạng mục cần ưu tiên xử lý.
+    </p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-xl-2">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Dự án tham gia</div>
+                <div class="fs-3 fw-bold">@Model.TotalProjects</div>
+                <div class="small text-secondary">Tổng số dự án đang tham gia</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-2">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Công việc được giao</div>
+                <div class="fs-3 fw-bold">@Model.TotalAssignedTasks</div>
+                <div class="small text-secondary">Tổng số công việc của bạn</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-2">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Đang thực hiện</div>
+                <div class="fs-3 fw-bold text-primary">@Model.InProgressTasks</div>
+                <div class="small text-secondary">Cần tiếp tục theo dõi</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-2">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Đã hoàn thành</div>
+                <div class="fs-3 fw-bold text-success">@Model.CompletedTasks</div>
+                <div class="small text-secondary">Các công việc đã xong</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-2">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Sắp đến hạn</div>
+                <div class="fs-3 fw-bold text-warning">@Model.DueSoonTasks</div>
+                <div class="small text-secondary">Cần chú ý trong 3 ngày tới</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-2">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Quá hạn</div>
+                <div class="fs-3 fw-bold text-danger">@Model.OverdueTasks</div>
+                <div class="small text-secondary">Ưu tiên xử lý ngay</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">@Model.AssistantTitle</h5>
+                <span class="badge @assistantMoodClass">@Model.AssistantMood</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 p-3 rounded-3 border bg-light">
+                    <div class="fw-semibold mb-1">Hôm nay trợ lý đang theo dõi gì cho bạn?</div>
+                    <div class="text-muted small">
+                        Deadline gần, công việc ưu tiên cao và tiến độ cá nhân của bạn.
+                    </div>
+                </div>
+
+                <div class="alert alert-warning border-0 mb-3">
+                    @Model.FriendlyReminder
+                </div>
+
+                <div class="p-3 rounded-3 bg-light border">
+                    <div class="fw-semibold mb-2">Ưu tiên hôm nay</div>
+                    <div>@Model.DailyFocusSuggestion</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Insight cá nhân</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.AiInsights.Any())
+                {
+                    foreach (var insight in Model.AiInsights)
+                    {
+                        var alertClass = insight.Severity switch
+                        {
+                            "Danger" => "alert-danger",
+                            "Warning" => "alert-warning",
+                            "Success" => "alert-success",
+                            _ => "alert-info"
+                        };
+
+                        <div class="alert @alertClass mb-3">
+                            <div class="fw-semibold mb-1">@insight.Title</div>
+                            <div>@insight.Message</div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-muted">
+                        Chưa có insight nào nổi bật ở thời điểm hiện tại.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Công việc cần chú ý</h5>
+                <a asp-area="TeamMember"
+                       asp-controller="MyTasks"
+                       asp-action="Index"
+                       class="btn btn-outline-primary btn-sm">
+                    Xem tất cả
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.PriorityTasks.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Công việc</th>
+                                    <th>Dự án</th>
+                                    <th>Checklist</th>
+                                    <th>Hạn chót</th>
+                                    <th>Ưu tiên</th>
+                                    <th>Trạng thái</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.PriorityTasks)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@item.TaskTitle</td>
+                                        <td>@item.ProjectName</td>
+                                        <td>@item.ChecklistName</td>
+                                        <td>
+                                            @(item.Deadline.HasValue
+                                                ? item.Deadline.Value.ToString("dd/MM/yyyy HH:mm")
+                                                : "Chưa có hạn")
+                                        </td>
+                                        <td>@item.Priority</td>
+                                        <td>
+                                            @if (item.IsOverdue)
+                                            {
+                                                <span class="badge bg-danger">Quá hạn</span>
+                                            }
+                                            else if (item.Status == "Đang thực hiện")
+                                            {
+                                                <span class="badge bg-primary">@item.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">@item.Status</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-area="TeamMember"
+                                                   asp-controller="MyTasks"
+                                                   asp-action="Details"
+                                                   asp-route-id="@item.TaskItemId"
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                Xem
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">
+                        Hiện chưa có công việc nào sắp đến hạn hoặc quá hạn.
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Tiến độ dự án của tôi</h5>
+                <a asp-area="TeamMember"
+                       asp-controller="MyProjects"
+                       asp-action="Index"
+                       class="btn btn-outline-primary btn-sm">
+                    Xem dự án
+                </a>
+            </div>
+            <div class="card-body">
+                @if (Model.MyProjects.Any())
+                {
+                    <div class="row g-3">
+                        @foreach (var item in Model.MyProjects)
+                        {
+                            <div class="col-md-6">
+                                <div class="border rounded-3 p-3 h-100">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <div class="fw-bold">@item.ProjectName</div>
+                                            <div class="text-muted small">
+                                                @item.CompletedTasks / @item.TotalTasks công việc hoàn thành
+                                            </div>
+                                        </div>
+                                        <span class="badge bg-info text-dark">@item.ProgressPercent%</span>
+                                    </div>
+
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar"
+                                             role="progressbar"
+                                             style="width: @item.ProgressPercent%;"
+                                             aria-valuenow="@item.ProgressPercent"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <a asp-area="TeamMember"
+                                               asp-controller="MyProjects"
+                                               asp-action="Details"
+                                               asp-route-id="@item.ProjectId"
+                                               class="btn btn-sm btn-outline-secondary">
+                                            Xem chi tiết
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">
+                        Bạn chưa tham gia dự án nào.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Tiến độ cá nhân</h5>
+            </div>
+            <div class="card-body">
+                <div class="fs-2 fw-bold text-success">@Model.CompletionRate%</div>
+                <div class="text-muted mb-3">Tỷ lệ hoàn thành công việc được giao</div>
+
+                <div class="d-grid gap-2">
+                    <a asp-area="TeamMember"
+                           asp-controller="MyTasks"
+                           asp-action="Index"
+                           class="btn btn-primary">
+                        Xem công việc của tôi
+                    </a>
+
+                    <a asp-area="TeamMember"
+                           asp-controller="MyProjects"
+                           asp-action="Index"
+                           class="btn btn-outline-primary">
+                        Xem dự án của tôi
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Gợi ý ưu tiên</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.OverdueTasks > 0)
+                {
+                    <div class="alert alert-danger mb-3">
+                        Bạn có <strong>@Model.OverdueTasks</strong> công việc quá hạn cần xử lý ngay.
+                    </div>
+                }
+
+                @if (Model.DueSoonTasks > 0)
+                {
+                    <div class="alert alert-warning mb-3">
+                        Có <strong>@Model.DueSoonTasks</strong> công việc sắp đến hạn trong 3 ngày tới.
+                    </div>
+                }
+
+                @if (Model.OverdueTasks == 0 && Model.DueSoonTasks == 0)
+                {
+                    <div class="alert alert-success mb-0">
+                        Tuyệt vời, hiện chưa có công việc quá hạn hoặc sắp đến hạn.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

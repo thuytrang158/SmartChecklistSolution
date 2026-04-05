@@ -1,0 +1,185 @@
+﻿@model IEnumerable<SmartChecklist.Web.Models.Project>
+
+@{
+    ViewData["Title"] = "Dự án";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">Danh sách dự án</h2>
+            <p class="pm-muted mb-0">
+                Quản lý toàn bộ dự án, theo dõi trạng thái, ưu tiên và truy cập nhanh đến checklist hoặc thành viên.
+            </p>
+        </div>
+
+        <div>
+            <a asp-area="ProjectManager"
+                   asp-controller="Projects"
+                   asp-action="Create"
+                   class="btn btn-primary">
+                + Tạo dự án mới
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="pm-table-wrap">
+            <table class="table pm-table">
+                <thead>
+                    <tr>
+                        <th>Tên dự án</th>
+                        <th>Mô tả</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th>Ưu tiên</th>
+                        <th style="width: 320px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var statusClass = "pm-badge-info";
+                        if (item.Status == "Hoàn thành")
+                        {
+                            statusClass = "pm-badge-success";
+                        }
+                        else if (item.Status == "Tạm dừng")
+                        {
+                            statusClass = "pm-badge-warning";
+                        }
+                        else if (item.Status == "Trễ hạn" || item.Status == "Quá hạn")
+                        {
+                            statusClass = "pm-badge-danger";
+                        }
+
+                        var priorityClass = "pm-badge-info";
+                        var priorityText = $"Mức {item.PriorityScore}";
+
+                        if (item.PriorityScore >= 8)
+                        {
+                            priorityClass = "pm-badge-danger";
+                            priorityText = $"Rất cao ({item.PriorityScore})";
+                        }
+                        else if (item.PriorityScore >= 5)
+                        {
+                            priorityClass = "pm-badge-warning";
+                            priorityText = $"Trung bình ({item.PriorityScore})";
+                        }
+                        else if (item.PriorityScore > 0)
+                        {
+                            priorityClass = "pm-badge-success";
+                            priorityText = $"Thấp ({item.PriorityScore})";
+                        }
+                        else
+                        {
+                            priorityClass = "pm-badge-info";
+                            priorityText = "Chưa đặt";
+                        }
+
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@item.Name</div>
+                                <div class="pm-muted small">Mã dự án: #@item.ProjectId</div>
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    @item.Description
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa có mô tả</span>
+                                }
+                            </td>
+
+                            <td>
+                                <div>
+                                    <span class="fw-semibold">Bắt đầu:</span>
+                                    @(item.StartDate.HasValue? item.StartDate.Value.ToString("dd/MM/yyyy") : "Chưa đặt")
+                                </div>
+                                <div>
+                                    <span class="fw-semibold">Kết thúc:</span>
+                                    @(item.EndDate.HasValue? item.EndDate.Value.ToString("dd/MM/yyyy") : "Chưa đặt")
+                                </div>
+
+                                @if (item.StartDate.HasValue && item.EndDate.HasValue && item.EndDate < item.StartDate)
+                                {
+                                    <div class="text-danger small mt-1">
+                                        Dữ liệu ngày chưa hợp lệ
+                                    </div>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="pm-badge @statusClass">@item.Status</span>
+                            </td>
+
+                            <td>
+                                <span class="pm-badge @priorityClass">@priorityText</span>
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="Projects"
+                                           asp-action="Details"
+                                           asp-route-id="@item.ProjectId"
+                                           class="btn btn-outline-primary btn-sm">
+                                        Chi tiết
+                                    </a>
+
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="Projects"
+                                           asp-action="Edit"
+                                           asp-route-id="@item.ProjectId"
+                                           class="btn btn-outline-warning btn-sm">
+                                        Sửa
+                                    </a>
+
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="ProjectMembers"
+                                           asp-action="Index"
+                                           asp-route-projectId="@item.ProjectId"
+                                           class="btn btn-outline-secondary btn-sm">
+                                        Thành viên
+                                    </a>
+
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="Checklists"
+                                           asp-action="Index"
+                                           asp-route-projectId="@item.ProjectId"
+                                           class="btn btn-outline-success btn-sm">
+                                        Checklist
+                                    </a>
+
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="Projects"
+                                           asp-action="Delete"
+                                           asp-route-id="@item.ProjectId"
+                                           class="btn btn-outline-danger btn-sm">
+                                        Xóa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="pm-muted mb-3">Bạn chưa có dự án nào.</div>
+            <a asp-area="ProjectManager"
+                   asp-controller="Projects"
+                   asp-action="Create"
+                   class="btn btn-primary">
+                Tạo dự án đầu tiên
+            </a>
+        </div>
+    }
+</div>

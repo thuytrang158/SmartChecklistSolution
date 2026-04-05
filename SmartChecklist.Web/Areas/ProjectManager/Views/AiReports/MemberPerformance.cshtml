@@ -1,0 +1,50 @@
+﻿@model IEnumerable<SmartChecklist.Web.ViewModels.MemberPerformanceViewModel>
+
+@{
+    ViewData["Title"] = "Phân tích hiệu suất thành viên";
+}
+
+<div class="container mt-4">
+    <h1>Phân tích hiệu suất thành viên</h1>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Họ tên</th>
+                <th>Tổng task</th>
+                <th>Hoàn thành</th>
+                <th>Quá hạn</th>
+                <th>Tỷ lệ hoàn thành</th>
+                <th>Đánh giá AI</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Email</td>
+                    <td>@item.FullName</td>
+                    <td>@item.TotalTasks</td>
+                    <td>@item.CompletedTasks</td>
+                    <td>@item.OverdueTasks</td>
+                    <td>@item.CompletionRate.ToString("0.##") %</td>
+                    <td>
+                        @if (item.OverdueTasks >= 3)
+                        {
+                            <span class="badge bg-danger">Cần hỗ trợ</span>
+                        }
+                        else if (item.CompletionRate >= 80)
+                        {
+                            <span class="badge bg-success">Hiệu suất tốt</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Theo dõi thêm</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

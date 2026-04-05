@@ -1,0 +1,85 @@
+﻿@model SmartChecklist.Web.ViewModels.PersonalProgressViewModel
+
+@{
+    ViewData["Title"] = "Tiến độ cá nhân";
+}
+
+<div class="container mt-4">
+    <h1>Tiến độ cá nhân</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-2">
+            <div class="card p-3 bg-light">
+                <h6>Tổng task</h6>
+                <h3>@Model.TotalTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card p-3 bg-success text-white">
+                <h6>Hoàn thành</h6>
+                <h3>@Model.CompletedTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card p-3 bg-primary text-white">
+                <h6>Đang thực hiện</h6>
+                <h3>@Model.InProgressTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card p-3 bg-secondary text-white">
+                <h6>Chưa thực hiện</h6>
+                <h3>@Model.NotStartedTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card p-3 bg-warning">
+                <h6>Quá hạn</h6>
+                <h3>@Model.OverdueTasks</h3>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="card p-3 bg-info text-dark">
+                <h6>Tỷ lệ hoàn thành</h6>
+                <h3>@Model.CompletionRate.ToString("0.##") %</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4 p-3">
+        <h4>Nhận xét AI</h4>
+        <p>@Model.AiComment</p>
+    </div>
+
+    <div class="card mt-4 p-3">
+        <h4>Công việc gần đây</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tiêu đề</th>
+                    <th>Dự án</th>
+                    <th>Deadline</th>
+                    <th>Ưu tiên</th>
+                    <th>Trạng thái</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.RecentTasks)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Checklist?.Project?.Name</td>
+                        <td>@item.Deadline?.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.Priority</td>
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

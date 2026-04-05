@@ -1,0 +1,178 @@
+﻿@model IEnumerable<SmartChecklist.Web.Models.Reminder>
+
+@{
+    var isOverview = ViewBag.IsOverview != null && (bool)ViewBag.IsOverview;
+    ViewData["Title"] = isOverview ? "Nhắc việc" : "Danh sách nhắc nhở";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">
+                @(isOverview ? "Tất cả nhắc việc" : "Danh sách nhắc nhở")
+            </h2>
+
+            @if (!isOverview)
+            {
+                <p class="pm-muted mb-0">
+                    Công việc: <span class="fw-semibold">@ViewBag.TaskTitle</span>
+                </p>
+            }
+            else
+            {
+                <p class="pm-muted mb-0">
+                    Tổng hợp toàn bộ reminder trong các dự án bạn đang quản lý.
+                </p>
+            }
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-taskItemId="@ViewBag.TaskItemId"
+                       class="btn btn-primary">
+                    + Tạo reminder mới
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="TaskItems"
+                       asp-action="Index"
+                       asp-route-checklistId="@ViewBag.ChecklistId"
+                       class="btn btn-outline-secondary">
+                    Quay lại công việc
+                </a>
+            }
+            else
+            {
+                <a asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                    Về tổng quan
+                </a>
+            }
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="pm-table-wrap">
+            <table class="table pm-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian nhắc</th>
+                        <th>Loại nhắc</th>
+                        <th>Trạng thái gửi</th>
+                        <th>Thời gian gửi</th>
+                        @if (isOverview)
+                        {
+                            <th>Công việc</th>
+                        }
+                        <th style="width: 140px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isPastReminder = item.ReminderTime <= DateTime.Now && !item.IsSent;
+
+                        <tr>
+                            <td>
+                                <div class="fw-semibold">@item.ReminderTime.ToString("dd/MM/yyyy HH:mm")</div>
+
+                                @if (isPastReminder)
+                                {
+                                    <div class="text-danger small mt-1">
+                                        Đã đến thời điểm nhắc nhưng chưa gửi
+                                    </div>
+                                }
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.ReminderType))
+                                {
+                                    <span class="pm-badge pm-badge-info">@item.ReminderType</span>
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa xác định</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.IsSent)
+                                {
+                                    <span class="pm-badge pm-badge-success">Đã gửi</span>
+                                }
+                                else if (isPastReminder)
+                                {
+                                    <span class="pm-badge pm-badge-danger">Chưa gửi</span>
+                                }
+                                else
+                                {
+                                    <span class="pm-badge pm-badge-warning">Chờ gửi</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.SentAt.HasValue)
+                                {
+                                    @item.SentAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa gửi</span>
+                                }
+                            </td>
+
+                            @if (isOverview)
+                            {
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(item.TaskItem?.Title))
+                                    {
+                                        <div class="fw-semibold">@item.TaskItem?.Title</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="pm-muted">Không xác định</span>
+                                    }
+                                </td>
+                            }
+
+                            <td>
+                                <a asp-action="Delete"
+                                       asp-route-id="@item.ReminderId"
+                                       class="btn btn-outline-danger btn-sm">
+                                    Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            @if (isOverview)
+            {
+                <div class="pm-muted mb-3">Hiện chưa có reminder nào trong các dự án bạn đang quản lý.</div>
+            }
+            else
+            {
+                <div class="pm-muted mb-3">Công việc này chưa có reminder nào.</div>
+            }
+
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-taskItemId="@ViewBag.TaskItemId"
+                       class="btn btn-primary">
+                    Tạo reminder đầu tiên
+                </a>
+            }
+        </div>
+    }
+</div>

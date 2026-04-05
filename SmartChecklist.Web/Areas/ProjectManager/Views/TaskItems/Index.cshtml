@@ -1,0 +1,255 @@
+﻿@model IEnumerable<SmartChecklist.Web.Models.TaskItem>
+
+@{
+    var isOverview = ViewBag.IsOverview != null && (bool)ViewBag.IsOverview;
+    ViewData["Title"] = isOverview ? "Công việc" : "Danh sách công việc";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">
+                @(isOverview ? "Tất cả công việc" : "Danh sách công việc")
+            </h2>
+
+            @if (!isOverview)
+            {
+                <p class="pm-muted mb-0">
+                    Checklist: <span class="fw-semibold">@ViewBag.ChecklistTitle</span>
+                </p>
+            }
+            else
+            {
+                <p class="pm-muted mb-0">
+                    Tổng hợp tất cả công việc thuộc các dự án bạn đang quản lý.
+                </p>
+            }
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-checklistId="@ViewBag.ChecklistId"
+                       class="btn btn-primary">
+                    + Tạo công việc mới
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Checklists"
+                       asp-action="Index"
+                       asp-route-projectId="@ViewBag.ProjectId"
+                       class="btn btn-outline-secondary">
+                    Quay lại checklist
+                </a>
+            }
+            else
+            {
+                <a asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
+                    Về tổng quan
+                </a>
+            }
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="pm-table-wrap">
+            <table class="table pm-table">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Deadline</th>
+                        <th>Ưu tiên</th>
+                        <th>Trạng thái</th>
+                        <th>Người phụ trách</th>
+                        <th style="width: 380px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isOverdue = item.Deadline.HasValue
+                            && item.Deadline.Value < DateTime.Now
+                            && item.Status != "Hoàn thành";
+
+                        var statusClass = "pm-badge-info";
+                        if (item.Status == "Hoàn thành")
+                        {
+                            statusClass = "pm-badge-success";
+                        }
+                        else if (item.Status == "Đang thực hiện")
+                        {
+                            statusClass = "pm-badge-warning";
+                        }
+                        else if (isOverdue)
+                        {
+                            statusClass = "pm-badge-danger";
+                        }
+
+                        var priorityClass = "pm-badge-info";
+                        if (!string.IsNullOrWhiteSpace(item.Priority))
+                        {
+                            var priority = item.Priority.Trim().ToLower();
+                            if (priority.Contains("cao"))
+                            {
+                                priorityClass = "pm-badge-danger";
+                            }
+                            else if (priority.Contains("trung"))
+                            {
+                                priorityClass = "pm-badge-warning";
+                            }
+                            else if (priority.Contains("thấp"))
+                            {
+                                priorityClass = "pm-badge-success";
+                            }
+                        }
+
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@item.Title</div>
+
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    <div class="pm-muted small mt-1">@item.Description</div>
+                                }
+                                else
+                                {
+                                    <div class="pm-muted small mt-1">Chưa có mô tả</div>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.Deadline.HasValue)
+                                {
+                                    <div>@item.Deadline.Value.ToString("dd/MM/yyyy HH:mm")</div>
+
+                                    @if (isOverdue)
+                                    {
+                                        <div class="text-danger small mt-1">Đã quá hạn</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa đặt</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.Priority))
+                                {
+                                    <span class="pm-badge @priorityClass">@item.Priority</span>
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa đặt</span>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="pm-badge @statusClass">
+                                    @(isOverdue ? "Quá hạn" : item.Status)
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.AssignedToUser?.Email))
+                                {
+                                    <div class="fw-semibold">@item.AssignedToUser?.Email</div>
+                                }
+                                else
+                                {
+                                    <span class="pm-muted">Chưa phân công</span>
+                                }
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-wrap gap-2 mb-2">
+                                    <a asp-action="Details"
+                                           asp-route-id="@item.TaskItemId"
+                                           class="btn btn-outline-primary btn-sm">
+                                        Chi tiết
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                           asp-route-id="@item.TaskItemId"
+                                           class="btn btn-outline-warning btn-sm">
+                                        Sửa
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                           asp-route-id="@item.TaskItemId"
+                                           class="btn btn-outline-danger btn-sm">
+                                        Xóa
+                                    </a>
+
+                                    <a asp-area="ProjectManager"
+                                           asp-controller="Reminders"
+                                           asp-action="Index"
+                                           asp-route-taskItemId="@item.TaskItemId"
+                                           class="btn btn-outline-secondary btn-sm">
+                                        Reminder
+                                    </a>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.TaskItemId" />
+                                        <input type="hidden" name="newStatus" value="Chưa thực hiện" />
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                            Chưa TH
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.TaskItemId" />
+                                        <input type="hidden" name="newStatus" value="Đang thực hiện" />
+                                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                                            Đang TH
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.TaskItemId" />
+                                        <input type="hidden" name="newStatus" value="Hoàn thành" />
+                                        <button type="submit" class="btn btn-outline-success btn-sm">
+                                            Hoàn thành
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            @if (isOverview)
+            {
+                <div class="pm-muted mb-3">Bạn chưa có công việc nào trong các dự án đang quản lý.</div>
+            }
+            else
+            {
+                <div class="pm-muted mb-3">Checklist này chưa có công việc nào.</div>
+            }
+
+            @if (!isOverview)
+            {
+                <a asp-action="Create"
+                       asp-route-checklistId="@ViewBag.ChecklistId"
+                       class="btn btn-primary">
+                    Tạo công việc đầu tiên
+                </a>
+            }
+        </div>
+    }
+</div>

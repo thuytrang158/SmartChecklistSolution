@@ -1,0 +1,186 @@
+﻿@model SmartChecklist.Web.Models.Checklist
+
+@{
+    ViewData["Title"] = "Chi tiết checklist";
+
+    var activeTasks = Model.TaskItems?.Where(t => !t.IsDeleted).ToList()
+                     ?? new List<SmartChecklist.Web.Models.TaskItem>();
+
+    var totalTasks = activeTasks.Count;
+    var completedTasks = activeTasks.Count(t => (t.Status ?? "").Trim() == "Hoàn thành");
+    var progressPercent = totalTasks == 0 ? 0 : (int)Math.Round((double)completedTasks * 100 / totalTasks);
+
+    var workTypeText = string.IsNullOrWhiteSpace(Model.WorkType) ? "Chưa phân loại" : Model.WorkType;
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="pm-card h-100">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+                <div>
+                    <h2 class="pm-section-title mb-2">@Model.Title</h2>
+                    <p class="pm-muted mb-0">
+                        Xem nhanh thông tin checklist, tiến độ thực hiện và truy cập danh sách công việc liên quan.
+                    </p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-action="Edit"
+                           asp-route-id="@Model.ChecklistId"
+                           class="btn btn-primary">
+                        Chỉnh sửa checklist
+                    </a>
+
+                    <a asp-action="Index"
+                           asp-route-projectId="@Model.ProjectId"
+                           class="btn btn-outline-secondary">
+                        Quay lại danh sách
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Tên checklist</div>
+                        <div class="fw-bold">@Model.Title</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-2">Loại công việc</div>
+                        <span class="pm-badge pm-badge-info">@workTypeText</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Ngày tạo</div>
+                        <div class="fw-bold">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 h-100">
+                        <div class="pm-muted small mb-1">Ngày cập nhật</div>
+                        <div class="fw-bold">
+                            @(Model.UpdatedAt.HasValue? Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="border rounded-4 p-3">
+                        <div class="pm-muted small mb-2">Mô tả checklist</div>
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <div>@Model.Description</div>
+                        }
+                        else
+                        {
+                            <div class="pm-muted">Checklist này chưa có mô tả.</div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="border rounded-4 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="pm-muted small">Tiến độ checklist</div>
+                            <div class="fw-bold">@progressPercent%</div>
+                        </div>
+
+                        <div class="pm-progress">
+                            <div class="pm-progress-bar" style="width: @(progressPercent == 0 ? 2 : progressPercent)%"></div>
+                        </div>
+
+                        <div class="form-text mt-2">
+                            @if (totalTasks == 0)
+                            {
+                                <span>Checklist này chưa có công việc nào để tính tiến độ.</span>
+                            }
+                            else
+                            {
+                                <span>@completedTasks / @totalTasks công việc đã hoàn thành.</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="pm-card mb-4">
+            <h3 class="pm-section-title">Tổng quan nhanh</h3>
+
+            <div class="row g-3">
+                <div class="col-6">
+                    <div class="pm-kpi-card text-center">
+                        <div class="pm-kpi-label">Tổng task</div>
+                        <div class="pm-kpi-value">@totalTasks</div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="pm-kpi-card text-center">
+                        <div class="pm-kpi-label">Hoàn thành</div>
+                        <div class="pm-kpi-value">@completedTasks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pm-card mb-4">
+            <h3 class="pm-section-title">Hành động nhanh</h3>
+            <div class="d-grid gap-3">
+                <a asp-area="ProjectManager"
+                       asp-controller="TaskItems"
+                       asp-action="Index"
+                       asp-route-checklistId="@Model.ChecklistId"
+                       class="btn btn-outline-success">
+                    Quản lý công việc
+                </a>
+
+                <a asp-action="Edit"
+                       asp-route-id="@Model.ChecklistId"
+                       class="btn btn-outline-primary">
+                    Cập nhật checklist
+                </a>
+
+                <a asp-action="Delete"
+                       asp-route-id="@Model.ChecklistId"
+                       class="btn btn-outline-danger">
+                    Xóa checklist
+                </a>
+            </div>
+        </div>
+
+        <div class="pm-card">
+            <h3 class="pm-section-title">Điều hướng</h3>
+            <div class="list-group list-group-flush">
+                <a asp-action="Index"
+                       asp-route-projectId="@Model.ProjectId"
+                       class="list-group-item list-group-item-action">
+                    Danh sách checklist
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Projects"
+                       asp-action="Details"
+                       asp-route-id="@Model.ProjectId"
+                       class="list-group-item list-group-item-action">
+                    Về chi tiết dự án
+                </a>
+
+                <a asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Index"
+                       class="list-group-item list-group-item-action">
+                    Về tổng quan
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

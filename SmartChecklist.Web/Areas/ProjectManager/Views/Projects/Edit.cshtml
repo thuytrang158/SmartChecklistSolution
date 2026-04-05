@@ -1,0 +1,125 @@
+﻿@model SmartChecklist.Web.Models.Project
+
+@{
+    ViewData["Title"] = "Sửa dự án";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">Cập nhật dự án</h2>
+            <p class="pm-muted mb-0">
+                Chỉnh sửa thông tin dự án, trạng thái thực hiện và mức độ ưu tiên.
+            </p>
+        </div>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Quay lại danh sách
+        </a>
+    </div>
+
+    <form asp-action="Edit" method="post" novalidate>
+        <input type="hidden" asp-for="ProjectId" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="pm-card h-100">
+                    <h3 class="pm-section-title">Thông tin dự án</h3>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Nhập tên dự án" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="Cập nhật mô tả dự án"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                            <input asp-for="StartDate" class="form-control" type="date" />
+                            <span asp-validation-for="StartDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                            <input asp-for="EndDate" class="form-control" type="date" />
+                            <span asp-validation-for="EndDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Mới tạo">Mới tạo</option>
+                                <option value="Đang thực hiện">Đang thực hiện</option>
+                                <option value="Tạm dừng">Tạm dừng</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                                <option value="Quá hạn">Quá hạn</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="PriorityScore" class="form-label fw-semibold"></label>
+                            <input asp-for="PriorityScore"
+                                   class="form-control"
+                                   type="number"
+                                   min="0"
+                                   max="10"
+                                   placeholder="0 - 10" />
+                            <div class="form-text">
+                                Gợi ý: 0 = chưa đặt, 1-4 = thấp, 5-7 = trung bình, 8-10 = rất cao.
+                            </div>
+                            <span asp-validation-for="PriorityScore" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pm-card mb-4">
+                    <h3 class="pm-section-title">Hướng dẫn cập nhật</h3>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb-2">Nên cập nhật trạng thái đúng với tiến độ thực tế.</li>
+                        <li class="mb-2">Điểm ưu tiên càng cao thì dự án càng cần chú ý.</li>
+                        <li>Nếu ngày kết thúc nhỏ hơn ngày bắt đầu, bạn nên sửa lại.</li>
+                    </ul>
+                </div>
+
+                <div class="pm-card">
+                    <h3 class="pm-section-title">Thao tác</h3>
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success">
+                            Lưu thay đổi
+                        </button>
+
+                        <a asp-action="Details"
+                               asp-route-id="@Model.ProjectId"
+                               class="btn btn-outline-primary">
+                            Xem chi tiết dự án
+                        </a>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,113 @@
+﻿@model SmartChecklist.Web.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Xóa công việc";
+
+    var isOverdue = Model.Deadline.HasValue
+        && Model.Deadline.Value < DateTime.Now
+        && Model.Status != "Hoàn thành";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2 text-danger">Xác nhận xóa công việc</h2>
+            <p class="pm-muted mb-0">
+                Công việc này sẽ bị ẩn khỏi checklist sau khi xác nhận xóa.
+            </p>
+        </div>
+
+        <a asp-action="Index"
+               asp-route-checklistId="@Model.ChecklistId"
+               class="btn btn-outline-secondary">
+            Quay lại danh sách công việc
+        </a>
+    </div>
+
+    <div class="alert alert-danger">
+        Bạn có chắc muốn xóa công việc này không? Reminder và lịch sử theo dõi liên quan có thể không còn hiển thị như trước.
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="pm-card h-100">
+                <h3 class="pm-section-title">Thông tin công việc</h3>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <div class="pm-muted small mb-1">Tiêu đề</div>
+                            <div class="fw-bold">@Model.Title</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <div class="pm-muted small mb-1">Người phụ trách</div>
+                            <div class="fw-bold">
+                                @(string.IsNullOrWhiteSpace(Model.AssignedToUser?.Email) ? "Chưa phân công" : Model.AssignedToUser!.Email)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <div class="pm-muted small mb-1">Deadline</div>
+                            <div class="fw-bold">
+                                @(Model.Deadline.HasValue? Model.Deadline.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa đặt")
+                            </div>
+                            @if (isOverdue)
+                            {
+                                <div class="text-danger small mt-1">Công việc đang quá hạn</div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="border rounded-4 p-3 h-100">
+                            <div class="pm-muted small mb-1">Trạng thái</div>
+                            <div class="fw-bold">@Model.Status</div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="border rounded-4 p-3">
+                            <div class="pm-muted small mb-2">Mô tả</div>
+                            @if (!string.IsNullOrWhiteSpace(Model.Description))
+                            {
+                                <div>@Model.Description</div>
+                            }
+                            else
+                            {
+                                <div class="pm-muted">Công việc này chưa có mô tả.</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="pm-card">
+                <h3 class="pm-section-title">Thao tác</h3>
+
+                <form asp-action="Delete" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="TaskItemId" />
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-danger">
+                            Xác nhận xóa công việc
+                        </button>
+
+                        <a asp-action="Index"
+                               asp-route-checklistId="@Model.ChecklistId"
+                               class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

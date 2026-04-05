@@ -1,0 +1,268 @@
+﻿@using System.Security.Claims
+@{
+    var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string IsActive(string controller, string action = "Index")
+    {
+        return currentController == controller && currentAction == action ? "tm-nav-link active" : "tm-nav-link";
+    }
+
+    var userEmail = User?.Identity?.Name ?? "Team Member";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartChecklist</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+            body {
+                background: #f4f7fb;
+                color: #1f2937;
+            }
+
+            .tm-layout {
+                min-height: 100vh;
+                display: flex;
+            }
+
+            .tm-sidebar {
+                width: 280px;
+                background: linear-gradient(180deg, #1e3a8a 0%, #2563eb 100%);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                padding: 24px 20px;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+            }
+
+            .tm-brand {
+                margin-bottom: 28px;
+            }
+
+                .tm-brand h2 {
+                    margin: 0;
+                    font-size: 2rem;
+                    font-weight: 800;
+                    letter-spacing: -0.5px;
+                }
+
+                .tm-brand p {
+                    margin: 6px 0 0;
+                    opacity: 0.9;
+                    font-size: 0.98rem;
+                }
+
+            .tm-nav {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .tm-nav-link {
+                display: block;
+                color: rgba(255,255,255,0.92);
+                text-decoration: none;
+                padding: 12px 14px;
+                border-radius: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+            }
+
+                .tm-nav-link:hover {
+                    background: rgba(255,255,255,0.12);
+                    color: white;
+                }
+
+                .tm-nav-link.active {
+                    background: white;
+                    color: #1d4ed8;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+                }
+
+            .tm-sidebar-footer {
+                margin-top: auto;
+                font-size: 0.95rem;
+                opacity: 0.9;
+                padding-top: 18px;
+            }
+
+            .tm-main {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+            .tm-topbar {
+                background: white;
+                border-bottom: 1px solid #e5e7eb;
+                padding: 18px 28px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 16px;
+            }
+
+            .tm-topbar-left .tm-system-name {
+                color: #64748b;
+                font-size: 0.95rem;
+                margin-bottom: 4px;
+            }
+
+            .tm-topbar-left .tm-page-title {
+                margin: 0;
+                font-size: 2rem;
+                font-weight: 800;
+                color: #0f172a;
+            }
+
+            .tm-topbar-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+
+            .tm-user-box {
+                text-align: right;
+            }
+
+                .tm-user-box .tm-hello {
+                    color: #64748b;
+                    font-size: 0.95rem;
+                    margin-bottom: 2px;
+                }
+
+                .tm-user-box .tm-user-name {
+                    font-weight: 700;
+                    color: #0f172a;
+                }
+
+            .tm-content {
+                padding: 28px;
+            }
+
+            .tm-btn-outline {
+                border-radius: 10px;
+                padding: 8px 14px;
+            }
+
+            .tm-btn-danger {
+                border-radius: 10px;
+                padding: 8px 14px;
+            }
+
+            @@media (max-width: 991.98px) {
+                .tm-layout {
+                    flex-direction: column;
+                }
+
+                .tm-sidebar {
+                    width: 100%;
+                    height: auto;
+                    position: relative;
+                }
+
+                .tm-main {
+                    width: 100%;
+                }
+
+                .tm-topbar {
+                    padding: 16px 18px;
+                }
+
+                .tm-content {
+                    padding: 18px;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="tm-layout">
+        <aside class="tm-sidebar">
+            <div class="tm-brand">
+                <h2>SmartChecklist</h2>
+                <p>Team Member</p>
+            </div>
+
+            <nav class="tm-nav">
+                <a asp-area="TeamMember" asp-controller="Dashboard" asp-action="Index" class="@IsActive("Dashboard")">
+                    Tổng quan
+                </a>
+
+                <a asp-area="TeamMember" asp-controller="MyProjects" asp-action="Index" class="@IsActive("MyProjects")">
+                    Dự án của tôi
+                </a>
+
+                <a asp-area="TeamMember" asp-controller="MyTasks" asp-action="Index" class="@IsActive("MyTasks")">
+                    Công việc của tôi
+                </a>
+
+                <a asp-area="TeamMember" asp-controller="Notifications" asp-action="Index" class="@IsActive("Notifications")">
+                    Thông báo
+                </a>
+
+                <a asp-area="TeamMember" asp-controller="Progress" asp-action="Index" class="@IsActive("Progress")">
+                    Tiến độ cá nhân
+                </a>
+
+                <a asp-area="TeamMember" asp-controller="Streak" asp-action="Index" class="@IsActive("Streak")">
+                    Streak
+                </a>
+
+                <a asp-controller="Profile" asp-action="Index" class="tm-nav-link">
+                    Hồ sơ
+                </a>
+            </nav>
+
+            <div class="tm-sidebar-footer">
+                SmartChecklist Management
+            </div>
+        </aside>
+
+        <main class="tm-main">
+            <header class="tm-topbar">
+                <div class="tm-topbar-left">
+                    <div class="tm-system-name">Hệ thống theo dõi checklist công việc nhóm dự án</div>
+                    <h1 class="tm-page-title">@ViewData["Title"]</h1>
+                </div>
+
+                <div class="tm-topbar-right">
+                    <div class="tm-user-box">
+                        <div class="tm-hello">Xin chào</div>
+                        <div class="tm-user-name">@userEmail</div>
+                    </div>
+
+                    <a asp-controller="Profile" asp-action="Index" class="btn btn-outline-primary tm-btn-outline">
+                        Hồ sơ
+                    </a>
+
+                    <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post" class="m-0">
+                        <button type="submit" class="btn btn-danger tm-btn-danger">
+                            Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            <div class="tm-content">
+                @RenderBody()
+            </div>
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

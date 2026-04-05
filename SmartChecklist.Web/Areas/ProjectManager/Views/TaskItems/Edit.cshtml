@@ -1,0 +1,130 @@
+﻿@model SmartChecklist.Web.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Sửa công việc";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">Cập nhật công việc</h2>
+            <p class="pm-muted mb-0">
+                Checklist: <span class="fw-semibold">@ViewBag.ChecklistTitle</span>
+            </p>
+        </div>
+
+        <a asp-action="Index"
+               asp-route-checklistId="@Model.ChecklistId"
+               class="btn btn-outline-secondary">
+            Quay lại danh sách công việc
+        </a>
+    </div>
+
+    <form asp-action="Edit" method="post" novalidate>
+        <input type="hidden" asp-for="TaskItemId" />
+        <input type="hidden" asp-for="ChecklistId" />
+        <input type="hidden" asp-for="CreatedByUserId" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="pm-card h-100">
+                    <h3 class="pm-section-title">Thông tin công việc</h3>
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-semibold"></label>
+                        <input asp-for="Title"
+                               class="form-control"
+                               placeholder="Nhập tiêu đề công việc" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="Cập nhật mô tả công việc"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Deadline" class="form-label fw-semibold"></label>
+                            <input asp-for="Deadline" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="Deadline" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="AssignedToUserId" class="form-label fw-semibold">Người phụ trách</label>
+                            <select asp-for="AssignedToUserId"
+                                    class="form-select"
+                                    asp-items="ViewBag.AssignedToUserId">
+                                <option value="">-- Chọn thành viên --</option>
+                            </select>
+                            <span asp-validation-for="AssignedToUserId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Priority" class="form-label fw-semibold"></label>
+                            <select asp-for="Priority" class="form-select">
+                                <option value="Thấp">Thấp</option>
+                                <option value="Trung bình">Trung bình</option>
+                                <option value="Cao">Cao</option>
+                                <option value="Khẩn cấp">Khẩn cấp</option>
+                            </select>
+                            <span asp-validation-for="Priority" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Status" class="form-label fw-semibold"></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Chưa thực hiện">Chưa thực hiện</option>
+                                <option value="Đang thực hiện">Đang thực hiện</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pm-card mb-4">
+                    <h3 class="pm-section-title">Lưu ý cập nhật</h3>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb-2">Cập nhật trạng thái sát với tiến độ thực tế.</li>
+                        <li class="mb-2">Nếu công việc đã hoàn thành, nên chọn đúng trạng thái để hệ thống tính tiến độ.</li>
+                        <li>Deadline nên hợp lý với mức ưu tiên và người phụ trách.</li>
+                    </ul>
+                </div>
+
+                <div class="pm-card">
+                    <h3 class="pm-section-title">Thao tác</h3>
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success">
+                            Lưu thay đổi
+                        </button>
+
+                        <a asp-action="Details"
+                               asp-route-id="@Model.TaskItemId"
+                               class="btn btn-outline-primary">
+                            Xem chi tiết công việc
+                        </a>
+
+                        <a asp-action="Index"
+                               asp-route-checklistId="@Model.ChecklistId"
+                               class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

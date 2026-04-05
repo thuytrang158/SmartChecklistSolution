@@ -1,0 +1,42 @@
+﻿@model SmartChecklist.Web.ViewModels.StreakViewModel
+
+@{
+    ViewData["Title"] = "Streak hoàn thành công việc";
+}
+
+<div class="container mt-4">
+    <h1>Streak hoàn thành công việc</h1>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card p-4 bg-success text-white">
+                <h4>Streak hiện tại</h4>
+                <h1>@Model.CurrentStreak ngày</h1>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4 bg-primary text-white">
+                <h4>Streak tốt nhất</h4>
+                <h1>@Model.BestStreak ngày</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4 p-3">
+        <h4>30 ngày hoàn thành gần nhất</h4>
+        @if (Model.CompletionDays.Any())
+        {
+            <ul>
+                @foreach (var day in Model.CompletionDays)
+                {
+                    <li>@day.ToString("dd/MM/yyyy")</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Chưa có ngày hoàn thành công việc nào.</p>
+        }
+    </div>
+</div>

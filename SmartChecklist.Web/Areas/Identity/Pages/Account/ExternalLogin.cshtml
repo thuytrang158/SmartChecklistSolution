@@ -1,0 +1,44 @@
+﻿@page
+@model SmartChecklist.Web.Areas.Identity.Pages.Account.ExternalLoginModel
+@{
+    ViewData["Title"] = "Hoàn tất đăng ký bằng Google";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h2>Vui lòng bổ sung thông tin để hoàn tất đăng ký.</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="name@example.com" readonly />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                <label asp-for="Input.FullName"></label>
+                <span asp-validation-for="Input.FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Input.RoleName" class="form-label"></label>
+                <select asp-for="Input.RoleName" class="form-select">
+                    <option value="TeamMember">Team Member</option>
+                    <option value="ProjectManager">Project Manager</option>
+                </select>
+                <span asp-validation-for="Input.RoleName" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Hoàn tất đăng ký</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

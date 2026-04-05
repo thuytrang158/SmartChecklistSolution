@@ -1,0 +1,30 @@
+﻿@page
+@model SmartChecklist.Web.Areas.Identity.Pages.Account.AccessDeniedModel
+@{
+    ViewData["Title"] = "Không có quyền truy cập";
+}
+
+<div class="container mt-5 text-center">
+    <h1 class="text-danger">🚫 Không có quyền truy cập</h1>
+    <p class="lead">Bạn không được phép truy cập chức năng này.</p>
+
+    <hr />
+
+    <a class="btn btn-primary me-2" href="/">Về trang chủ</a>
+
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole("ProjectManager"))
+        {
+            <a class="btn btn-success" href="/ProjectManager/Dashboard">Về Dashboard</a>
+        }
+        else if (User.IsInRole("TeamMember"))
+        {
+            <a class="btn btn-success" href="/TeamMember/Dashboard">Về Dashboard</a>
+        }
+        else if (User.IsInRole("Admin"))
+        {
+            <a class="btn btn-success" href="/Admin/Dashboard">Về Dashboard</a>
+        }
+    }
+</div>

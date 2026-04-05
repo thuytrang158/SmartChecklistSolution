@@ -1,0 +1,140 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SmartChecklist.Web.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SmartChecklist</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/projectmanager.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SmartChecklist.Web.styles.css" asp-append-version="true" />
+</head>
+<body class="pm-body">
+    <div class="pm-layout">
+        <!-- Sidebar -->
+        <aside class="pm-sidebar">
+            <div class="pm-sidebar-header">
+                <a asp-area="ProjectManager" asp-controller="Dashboard" asp-action="Index" class="pm-brand">
+                    SmartChecklist
+                </a>
+                <div class="pm-role-label">Project Manager</div>
+            </div>
+
+            <nav class="pm-nav">
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Index">
+                    Tổng quan
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="Projects"
+                       asp-action="Index">
+                    Dự án
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="Checklists"
+                       asp-action="Overview">
+                    Checklist
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="TaskItems"
+                       asp-action="Overview">
+                    Công việc
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="ProjectMembers"
+                       asp-action="Overview">
+                    Thành viên
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="Reminders"
+                       asp-action="Overview">
+                    Nhắc việc
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="Dashboard"
+                       asp-action="Report">
+                    Báo cáo
+                </a>
+
+                <a class="pm-nav-link"
+                       asp-area="ProjectManager"
+                       asp-controller="AiReports"
+                       asp-action="MemberPerformance">
+                    AI hỗ trợ
+                </a>
+            </nav>
+
+            <div class="pm-sidebar-footer">
+                <small>SmartChecklist Management</small>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <div class="pm-main">
+            <!-- Topbar -->
+            <header class="pm-topbar">
+                <div>
+                    <div class="pm-page-caption">Hệ thống quản lý checklist dự án</div>
+                    <h1 class="pm-page-title">@ViewData["Title"]</h1>
+                </div>
+
+                <div class="pm-topbar-right">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <div class="pm-user-box">
+                            <div class="pm-user-greeting">Xin chào</div>
+                            <div class="pm-user-name">@User.Identity?.Name</div>
+                        </div>
+
+                        <a class="btn btn-outline-primary btn-sm"
+                               asp-controller="Profile"
+                               asp-action="Index">
+                            Hồ sơ
+                        </a>
+
+                        <form asp-area="Identity"
+                              asp-page="/Account/Logout"
+                              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                              method="post"
+                              class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Đăng xuất
+                            </button>
+                        </form>
+                    }
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="pm-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

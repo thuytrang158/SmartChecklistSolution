@@ -1,0 +1,98 @@
+﻿@model SmartChecklist.Web.Models.Checklist
+
+@{
+    ViewData["Title"] = "Sửa checklist";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">Cập nhật checklist</h2>
+            <p class="pm-muted mb-0">
+                Dự án: <span class="fw-semibold">@ViewBag.ProjectName</span>
+            </p>
+        </div>
+
+        <a asp-action="Index"
+               asp-route-projectId="@Model.ProjectId"
+               class="btn btn-outline-secondary">
+            Quay lại danh sách checklist
+        </a>
+    </div>
+
+    <form asp-action="Edit" method="post" novalidate>
+        <input type="hidden" asp-for="ChecklistId" />
+        <input type="hidden" asp-for="ProjectId" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="pm-card h-100">
+                    <h3 class="pm-section-title">Thông tin checklist</h3>
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-semibold"></label>
+                        <input asp-for="Title"
+                               class="form-control"
+                               placeholder="Nhập tên checklist" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="5"
+                                  placeholder="Cập nhật mô tả checklist"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="WorkType" class="form-label fw-semibold"></label>
+                        <input asp-for="WorkType"
+                               class="form-control"
+                               placeholder="Ví dụ: Thiết kế, Kiểm thử, Phát triển..." />
+                        <span asp-validation-for="WorkType" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pm-card mb-4">
+                    <h3 class="pm-section-title">Lưu ý cập nhật</h3>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb-2">Tên checklist nên phản ánh đúng nhóm công việc.</li>
+                        <li class="mb-2">Loại công việc nên nhất quán để dễ lọc và theo dõi.</li>
+                        <li>Khi đổi nội dung checklist, bạn nên rà lại các task liên quan.</li>
+                    </ul>
+                </div>
+
+                <div class="pm-card">
+                    <h3 class="pm-section-title">Thao tác</h3>
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success">
+                            Lưu thay đổi
+                        </button>
+
+                        <a asp-action="Details"
+                               asp-route-id="@Model.ChecklistId"
+                               class="btn btn-outline-primary">
+                            Xem chi tiết checklist
+                        </a>
+
+                        <a asp-action="Index"
+                               asp-route-projectId="@Model.ProjectId"
+                               class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

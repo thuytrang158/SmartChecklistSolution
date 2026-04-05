@@ -1,0 +1,82 @@
+﻿@model SmartChecklist.Web.Models.Reminder
+
+@{
+    ViewData["Title"] = "Tạo reminder";
+}
+
+<div class="pm-card">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="pm-section-title mb-2">Tạo reminder</h2>
+            <p class="pm-muted mb-0">
+                Công việc: <span class="fw-semibold">@ViewBag.TaskTitle</span>
+            </p>
+        </div>
+
+        <a asp-action="Index"
+               asp-route-taskItemId="@Model.TaskItemId"
+               class="btn btn-outline-secondary">
+            Quay lại danh sách reminder
+        </a>
+    </div>
+
+    <form asp-action="Create" method="post" novalidate>
+        <input type="hidden" asp-for="TaskItemId" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="pm-card h-100">
+                    <h3 class="pm-section-title">Thông tin nhắc việc</h3>
+
+                    <div class="mb-3">
+                        <label asp-for="ReminderTime" class="form-label fw-semibold"></label>
+                        <input asp-for="ReminderTime" type="datetime-local" class="form-control" />
+                        <span asp-validation-for="ReminderTime" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ReminderType" class="form-label fw-semibold"></label>
+                        <select asp-for="ReminderType" class="form-select">
+                            <option value="InApp">Trong hệ thống</option>
+                            <option value="Deadline">Đến hạn</option>
+                            <option value="BeforeDeadline">Trước hạn</option>
+                        </select>
+                        <span asp-validation-for="ReminderType" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="pm-card mb-4">
+                    <h3 class="pm-section-title">Lưu ý</h3>
+                    <ul class="mb-0 ps-3">
+                        <li class="mb-2">Nên đặt reminder trước deadline để người phụ trách kịp xử lý.</li>
+                        <li class="mb-2">Reminder trong hệ thống phù hợp cho nhắc việc thông thường.</li>
+                        <li>Reminder sẽ được gửi khi hệ thống kiểm tra đến thời điểm nhắc.</li>
+                    </ul>
+                </div>
+
+                <div class="pm-card">
+                    <h3 class="pm-section-title">Thao tác</h3>
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-success">
+                            Lưu reminder
+                        </button>
+
+                        <a asp-action="Index"
+                               asp-route-taskItemId="@Model.TaskItemId"
+                               class="btn btn-outline-secondary">
+                            Hủy và quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
